@@ -4,7 +4,7 @@
  * Crea buffer circular en memoria compartida, acepta sensores via Named Pipes,
  * y deposita eventos en el buffer usando semaforos/mutex (sin busy waiting). */
 
-#include "../common.h"
+#include "common.h"
 
 #ifndef PIPE_NAME
 #define PIPE_NAME "\\\\.\\pipe\\telemetria_dispatcher"
@@ -18,7 +18,7 @@ static HANDLE g_hSemData = NULL;
 static HANDLE g_hDebugEvent = NULL;
 static HANDLE g_hShutdownEvent = NULL;
 static HANDLE g_receiverThreads[256] = { NULL };
-static int g_activeSensors = 0;
+static volatile LONG g_activeSensors = 0;
 static BOOL g_running = TRUE;
 
 void cleanup() {

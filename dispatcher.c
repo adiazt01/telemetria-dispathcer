@@ -25,7 +25,7 @@
  * ============================================================================
  */
 
-#include "../common.h"
+#include "common.h"
 
 /* Handle al archivo de mapeo del buffer circular */
 static HANDLE g_hBufferMapping = NULL;
@@ -310,7 +310,8 @@ void escribirLog(const SensorEvent* evento, int workerId) {
     }
 
     /* Esperar a que termine el bloqueo */
-    GetOverlappedResult(g_hLogFile, &ov, TRUE);
+    DWORD bytesTransferred;
+    GetOverlappedResult(g_hLogFile, &ov, &bytesTransferred, TRUE);
 
     /* Escribir en el archivo */
     WriteFile(

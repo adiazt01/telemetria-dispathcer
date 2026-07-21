@@ -15,7 +15,7 @@
  * ============================================================================
  */
 
-#include "../common.h"
+#include "common.h"
 
 /* Identificador unico de este sensor */
 static DWORD g_sensorId = 0;
@@ -106,7 +106,7 @@ BOOL controlarTecla(DWORD waitTime) {
     if (WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), waitTime) == WAIT_OBJECT_0) {
         INPUT_RECORD input; DWORD numEvents;
         ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &numEvents);
-        if (input.EventType == KEY_EVENT && input.KeyEvent.bKeyDown && input.KeyEvent.wVirtualKeyCode == VK_ESCAPE) {
+        if (input.EventType == KEY_EVENT && input.Event.KeyEvent.bKeyDown && input.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) {
             /* ESC para salir */
             printf("\n[Sensor %d] Solicitud de apagado recibida...\n", g_sensorId); g_running = FALSE; return FALSE;
         }

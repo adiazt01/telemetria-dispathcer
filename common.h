@@ -30,22 +30,22 @@
  * ============================================================================ */
 
 /* Nombre del buffer circular en memoria compartida */
-#define BUFFER_NAME           "Global\\TelemetryBuffer"
+#define BUFFER_NAME           "TelemetryBuffer"
 
 /* Nombre del mutex para proteger el buffer circular */
-#define MUTEX_NAME            "Global\\BufferMutex"
+#define MUTEX_NAME            "BufferMutex"
 
 /* Nombre del semaforo de espacios disponibles (escritores) */
-#define SEMAPHORE_SLOTS_NAME  "Global\\BufferSlots"
+#define SEMAPHORE_SLOTS_NAME  "BufferSlots"
 
 /* Nombre del semaforo de datos disponibles (lectores) */
-#define SEMAPHORE_DATA_NAME   "Global\\BufferData"
+#define SEMAPHORE_DATA_NAME   "BufferData"
 
 /* Nombre del evento para que Monitor controle al Broker */
-#define EVENT_DEBUG_NAME      "Global\\DebugEvent"
+#define EVENT_DEBUG_NAME      "DebugEvent"
 
 /* Nombre del evento de apagado */
-#define EVENT_SHUTDOWN_NAME   "Global\\ShutdownEvent"
+#define EVENT_SHUTDOWN_NAME   "ShutdownEvent"
 
 /* Nombre del pipe para cada sensor */
 #define PIPE_NAME             "\\\\.\\pipe\\TelemetryPipe"

@@ -182,8 +182,8 @@ DWORD WINAPI hiloTeclado(LPVOID lpParam) {
     while (g_running) {
         if (WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 100) == WAIT_OBJECT_0) {
             ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &numEvents);
-            if (input.EventType == KEY_EVENT && input.KeyEvent.bKeyDown)
-                procesarComando(input.KeyEvent.wVirtualKeyCode);
+            if (input.EventType == KEY_EVENT && input.Event.KeyEvent.bKeyDown)
+                procesarComando(input.Event.KeyEvent.wVirtualKeyCode);
         }
     }
     return 0;
