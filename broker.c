@@ -1,8 +1,14 @@
 /* broker.c - Broker Ingestor Central (Jesus Guzman)
+/* broker.c - Broker Ingestor Central (Jesus Guzman)
+/* broker.c - Broker Ingestor Central (Jesus Guzman)
  * Crea buffer circular en memoria compartida, acepta sensores via Named Pipes,
  * y deposita eventos en el buffer usando semaforos/mutex (sin busy waiting). */
 
 #include "../common.h"
+
+#ifndef PIPE_NAME
+#define PIPE_NAME "\\\\.\\pipe\\telemetria_dispatcher"
+#endif
 
 static HANDLE g_hBufferMapping = NULL;
 static CircularBuffer* g_pBuffer = NULL;
@@ -161,16 +167,19 @@ DWORD WINAPI hiloReceptor(LPVOID lpParam) {
             break;
         }
 
-        CircularBuffer* pBuf = (CircularBuffer*)params->hBufferMapping;
-        memcpy(&pBuf->events[pBuf->writePos], &evento, sizeof(SensorEvent));
-        pBuf->writePos = (pBuf->writePos + 1) % BUFFER_SIZE;
+		/* Actualizar estadisticas del dashboard */
+        memcpy(&g_pBuffer->events[g_pBuffer->writePos], &evento, sizeof(SensorEvent));
+        g_pBuffer->writePos = (g_pBuffer->writePos + 1) % BUFFER_SIZE;
+        
+        InterlockedDecrement(&g_pBuffer->availableSlots);
+        InterlockedIncrement(&g_pBuffer->availableData);
 
         ReleaseMutex(params->hMutex);
         ReleaseSemaphore(params->hSemData, 1, NULL);
 
         if (g_pBuffer->debugMode)
             printf("[Broker] Sensor %d -> Buffer[slot %d] Evento ID=%lu\n",
-                   sensorId, pBuf->writePos, evento.eventId);
+                   sensorId, g_pBuffer->writePos, evento.eventId);
     }
 
     DisconnectNamedPipe(params->hPipe);
@@ -186,17 +195,15 @@ DWORD WINAPI hiloReceptor(LPVOID lpParam) {
 void esperarConexiones() {
     HANDLE hPipe;
     DWORD threadId;
-    char pipeName[MAX_PATH];
     int nextSensorId = 0;
 
     printf("[Broker] Esperando conexiones de sensores...\n");
     printf("[Broker] Presione Ctrl+C para detener\n\n");
 
     while (g_running) {
-        snprintf(pipeName, MAX_PATH, PIPE_NAME_FORMAT, nextSensorId);
 
-        hPipe = CreateNamedPipe(
-            pipeName, PIPE_ACCESS_DUPLEX,
+		hPipe = CreateNamedPipe(
+            PIPE_NAME, PIPE_ACCESS_DUPLEX,
             PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
             PIPE_UNLIMITED_INSTANCES,
             sizeof(SensorEvent), sizeof(SensorEvent), TIMEOUT_MS, NULL
@@ -208,7 +215,7 @@ void esperarConexiones() {
             continue;
         }
 
-        printf("[Broker] Esperando conexion en %s...\n", pipeName);
+        printf("[Broker] Esperando conexion en %s...\n", PIPE_NAME);
         if (!ConnectNamedPipe(hPipe, NULL)) {
             DWORD error = GetLastError();
             if (error != ERROR_PIPE_CONNECTED) {
