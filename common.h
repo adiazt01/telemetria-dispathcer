@@ -1,8 +1,7 @@
 /*
  * ============================================================================
  * PROYECTO: Sistema de Telemetría y Control Concurrente
- * GRUPO: 8 - Garcia Fabiola, Carlos Brito Orellana Ana, Jesus Guzman Miserol Jose,
- *         Armando Diaz Rinaldi Giovanni, Jose Marquez
+ * GRUPO: 8 - Carlos Brito, Jesus Guzman, Armando Diaz, Jose Marquez
  * ASIGNATURA: Sistemas Operativos
  * ============================================================================
  *
