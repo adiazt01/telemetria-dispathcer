@@ -1,0 +1,3 @@
+build/
+*.exe
+telemetry_log.txt
