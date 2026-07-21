@@ -48,7 +48,7 @@
 #define EVENT_SHUTDOWN_NAME   "Global\\ShutdownEvent"
 
 /* Nombre del pipe para cada sensor */
-#define PIPE_NAME_FORMAT      "\\\\.\\pipe\\SensorPipe_%d"
+#define PIPE_NAME             "\\\\.\\pipe\\TelemetryPipe"
 
 /* Tamano del buffer circular (numero de eventos) */
 #define BUFFER_SIZE           100

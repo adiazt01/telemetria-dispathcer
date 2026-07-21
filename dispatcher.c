@@ -411,11 +411,12 @@ DWORD WINAPI hiloWorker(LPVOID lpParam) {
             break;
         }
 
-        /* Leer evento del buffer usando el indice de lectura */
+		/* Leer evento y actualizar estadisticas del dashboard */
         memcpy(&evento, &g_pBuffer->events[g_pBuffer->readPos], sizeof(SensorEvent));
-
-        /* Avanzar indice de lectura (circular) */
         g_pBuffer->readPos = (g_pBuffer->readPos + 1) % BUFFER_SIZE;
+        
+        InterlockedDecrement(&g_pBuffer->availableData);
+        InterlockedIncrement(&g_pBuffer->availableSlots);
 
         /* Salir de seccion critica */
         ReleaseMutex(g_hMutex);
