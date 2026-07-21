@@ -314,16 +314,11 @@ void escribirLog(const SensorEvent* evento, int workerId) {
     GetOverlappedResult(g_hLogFile, &ov, &bytesTransferred, TRUE);
 
     /* Escribir en el archivo */
-    WriteFile(
-        g_hLogFile,
-        buffer,
-        len,
-        &bytesWritten,
-        NULL
-    );
-
-    /* Flush para asegurar que se escriba inmediatamente */
-    FlushFileBuffers(g_hLogFile);
+    if (!WriteFile(g_hLogFile, buffer, len, &bytesWritten, NULL)) {
+        printf("[Worker-%d] Error en WriteFile: %d\n", workerId, GetLastError());
+    } else {
+        FlushFileBuffers(g_hLogFile);
+    }
 
     /* Desbloquear el archivo */
     UnlockFileEx(g_hLogFile, 0, 0, 0, &ov);
@@ -432,13 +427,9 @@ DWORD WINAPI hiloWorker(LPVOID lpParam) {
         procesarEvento(&evento, workerId);
 
         /* Verificar si hay solicitud de apagado */
-        if (waitResult == WAIT_OBJECT_0) {
-            HANDLE handles[1] = { g_hShutdownEvent };
-            waitResult = WaitForSingleObject(g_hShutdownEvent, 0);
-            if (waitResult == WAIT_OBJECT_0) {
-                printf("[Worker-%d] Senal de apagado recibida.\n", workerId);
-                break;
-            }
+        if (WaitForSingleObject(g_hShutdownEvent, 0) == WAIT_OBJECT_0) {
+            printf("[Worker-%d] Senal de apagado recibida.\n", workerId);
+            break;
         }
     }
 

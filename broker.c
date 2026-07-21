@@ -1,14 +1,8 @@
 /* broker.c - Broker Ingestor Central (Jesus Guzman)
-/* broker.c - Broker Ingestor Central (Jesus Guzman)
-/* broker.c - Broker Ingestor Central (Jesus Guzman)
  * Crea buffer circular en memoria compartida, acepta sensores via Named Pipes,
  * y deposita eventos en el buffer usando semaforos/mutex (sin busy waiting). */
 
 #include "common.h"
-
-#ifndef PIPE_NAME
-#define PIPE_NAME "\\\\.\\pipe\\telemetria_dispatcher"
-#endif
 
 static HANDLE g_hBufferMapping = NULL;
 static CircularBuffer* g_pBuffer = NULL;
@@ -170,7 +164,7 @@ DWORD WINAPI hiloReceptor(LPVOID lpParam) {
 		/* Actualizar estadisticas del dashboard */
         memcpy(&g_pBuffer->events[g_pBuffer->writePos], &evento, sizeof(SensorEvent));
         g_pBuffer->writePos = (g_pBuffer->writePos + 1) % BUFFER_SIZE;
-        
+
         InterlockedDecrement(&g_pBuffer->availableSlots);
         InterlockedIncrement(&g_pBuffer->availableData);
 
